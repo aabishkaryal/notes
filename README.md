@@ -1,3 +1,5 @@
-# Next Chakra Typescript Template
+# Notes
 
-This is my goto template when I start a new web developemnt project. It is based on [Next.js](https://nextjs.org/). I use [Chakra UI](https://chakra-ui.com/) components to build the UI.
+This is a webapp for managing notes. It is a simple webapp that allows you to create, edit, and delete notes.
+
+#### Work in progress
