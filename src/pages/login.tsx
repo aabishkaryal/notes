@@ -27,7 +27,7 @@ import { PasswordInput } from "@components/passwordInput";
 export default function Login() {
     return (
         <Center width="100%" height="100vh">
-            <Tabs boxShadow="md" variant="enclosed" isLazy>
+            <Tabs boxShadow="md" variant="enclosed" isLazy isFitted>
                 <TabList>
                     <Tab fontSize={{ base: "lg", md: "xl" }}>Sign Up</Tab>
                     <Tab fontSize={{ base: "lg", md: "xl" }}>Log In</Tab>
