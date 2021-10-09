@@ -1,14 +1,13 @@
-import React from "react";
+import Head from "next/head";
 
 import { ChakraProvider } from "@chakra-ui/react";
-import Head from "next/head";
 import { Provider as SessionProvider } from "next-auth/client";
 
 import theme from "@utils/theme";
 
 import { AppProps } from "next/app";
 
-function MyApp({ Component, pageProps }: AppProps) {
+export default function MyApp({ Component, pageProps }: AppProps) {
     return (
         <SessionProvider session={pageProps.session}>
             <ChakraProvider theme={theme}>
@@ -23,5 +22,3 @@ function MyApp({ Component, pageProps }: AppProps) {
         </SessionProvider>
     );
 }
-
-export default MyApp;
