@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import {
+    Text,
     InputGroup,
     Input,
     InputRightElement,
@@ -14,36 +15,45 @@ type Props = {
     placeholder: string;
     value: string;
     onChange: (value: string) => void;
+    error?: string;
 };
 
-export function PasswordInput({ placeholder, value, onChange }: Props) {
+export function PasswordInput({ placeholder, value, onChange, error }: Props) {
     const [show, toggleShow] = useState(false);
     return (
-        <InputGroup>
-            <InputLeftElement>
-                <InputLeftElement pointerEvents="none" color="gray.500">
-                    <RiLockPasswordFill />
+        <>
+            <InputGroup>
+                <InputLeftElement>
+                    <InputLeftElement pointerEvents="none" color="gray.500">
+                        <RiLockPasswordFill />
+                    </InputLeftElement>
                 </InputLeftElement>
-            </InputLeftElement>
-            <Input
-                type={show ? "text" : "password"}
-                placeholder={placeholder}
-                autoComplete="new-password"
-                variant="filled"
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-            />
-            <InputRightElement>
-                <IconButton
-                    aria-label="Toggle password show"
-                    icon={show ? <ViewIcon /> : <ViewOffIcon />}
-                    onClick={() => toggleShow(!show)}
-                    variant="ghost"
-                    isRound
-                    size="sm"
-                    color="gray.500"
+                <Input
+                    type={show ? "text" : "password"}
+                    placeholder={placeholder}
+                    autoComplete="new-password"
+                    variant="filled"
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    isInvalid={!!error}
                 />
-            </InputRightElement>
-        </InputGroup>
+                <InputRightElement>
+                    <IconButton
+                        aria-label="Toggle password show"
+                        icon={show ? <ViewIcon /> : <ViewOffIcon />}
+                        onClick={() => toggleShow(!show)}
+                        variant="ghost"
+                        isRound
+                        size="sm"
+                        color="gray.500"
+                    />
+                </InputRightElement>
+            </InputGroup>
+            {error && (
+                <Text color="red" fontSize="xs">
+                    {error}
+                </Text>
+            )}
+        </>
     );
 }
