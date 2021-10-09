@@ -95,7 +95,7 @@ function SignUpPanel() {
 function LoginPanel() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Sign Up");
+        console.log("Log In");
     };
 
     return (
