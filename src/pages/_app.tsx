@@ -7,6 +7,8 @@ import theme from "@utils/theme";
 
 import { AppProps } from "next/app";
 
+import "focus-visible/dist/focus-visible";
+
 export default function MyApp({ Component, pageProps }: AppProps) {
     return (
         <SessionProvider session={pageProps.session}>
