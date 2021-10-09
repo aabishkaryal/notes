@@ -15,14 +15,6 @@ export default NextAuth({
             },
         }),
     ],
-    callbacks: {
-        async signIn(_, __, profile) {
-            return (
-                profile.username === process.env.ADMIN_USERNAME &&
-                profile.password === process.env.ADMIN_PASSWORD
-            );
-        },
-    },
     secret: process.env.AUTH_SECRET,
     session: {
         jwt: true,
@@ -47,9 +39,9 @@ export default NextAuth({
             algorithms: ["HS512"],
         },
     },
-    theme: "light",
     debug: process.env.NODE_ENV !== "production",
     pages: {
-        signIn: "/admin",
+        signIn: "/",
+        signOut: "/signOut",
     },
 });
