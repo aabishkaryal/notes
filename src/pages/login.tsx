@@ -2,16 +2,16 @@ import { Box } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/client";
 
-export default function Home() {
-    return <Box>Hello World!</Box>;
+export default function Login() {
+    return <Box>Login</Box>;
 }
 
 export const getServerSideProps: GetServerSideProps<{}> = async (ctx) => {
     const session = await getSession(ctx);
-    if (!(session && session.user))
+    if (session && session.user)
         return {
             redirect: {
-                destination: "/login",
+                destination: "/",
                 permanent: false,
             },
         };
