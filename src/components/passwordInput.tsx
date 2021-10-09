@@ -7,6 +7,7 @@ import {
     InputRightElement,
     IconButton,
     InputLeftElement,
+    FormControl,
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { RiLockPasswordFill } from "react-icons/ri";
@@ -21,7 +22,7 @@ type Props = {
 export function PasswordInput({ placeholder, value, onChange, error }: Props) {
     const [show, toggleShow] = useState(false);
     return (
-        <>
+        <FormControl>
             <InputGroup>
                 <InputLeftElement>
                     <InputLeftElement pointerEvents="none" color="gray.500">
@@ -54,6 +55,6 @@ export function PasswordInput({ placeholder, value, onChange, error }: Props) {
                     {error}
                 </Text>
             )}
-        </>
+        </FormControl>
     );
 }
