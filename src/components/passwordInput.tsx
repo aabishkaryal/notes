@@ -1,11 +1,14 @@
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import React, { useState } from "react";
+
 import {
     InputGroup,
     Input,
     InputRightElement,
     IconButton,
+    InputLeftElement,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { RiLockPasswordFill } from "react-icons/ri";
 
 type Props = { placeholder: string };
 
@@ -13,6 +16,11 @@ export function PasswordInput({ placeholder }: Props) {
     const [show, toggleShow] = useState(false);
     return (
         <InputGroup>
+            <InputLeftElement>
+                <InputLeftElement pointerEvents="none" color="gray.500">
+                    <RiLockPasswordFill />
+                </InputLeftElement>
+            </InputLeftElement>
             <Input
                 type={show ? "text" : "password"}
                 placeholder={placeholder}
@@ -27,6 +35,7 @@ export function PasswordInput({ placeholder }: Props) {
                     variant="ghost"
                     isRound
                     size="sm"
+                    color="gray.500"
                 />
             </InputRightElement>
         </InputGroup>

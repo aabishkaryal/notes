@@ -17,6 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { FaRegUser } from "react-icons/fa";
 import { MdOutlineEmail, MdLogin } from "react-icons/md";
+import { FiUserPlus } from "react-icons/fi";
 
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/client";
@@ -83,7 +84,7 @@ function SignUpPanel() {
                 </InputGroup>
                 <PasswordInput placeholder="Password" />
                 <PasswordInput placeholder="Confirm Password" />
-                <Button type="submit" rightIcon={<MdLogin />}>
+                <Button type="submit" leftIcon={<FiUserPlus />}>
                     Sign Up
                 </Button>
             </VStack>
