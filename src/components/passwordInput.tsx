@@ -10,9 +10,13 @@ import {
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { RiLockPasswordFill } from "react-icons/ri";
 
-type Props = { placeholder: string };
+type Props = {
+    placeholder: string;
+    value: string;
+    onChange: (value: string) => void;
+};
 
-export function PasswordInput({ placeholder }: Props) {
+export function PasswordInput({ placeholder, value, onChange }: Props) {
     const [show, toggleShow] = useState(false);
     return (
         <InputGroup>
@@ -26,6 +30,8 @@ export function PasswordInput({ placeholder }: Props) {
                 placeholder={placeholder}
                 autoComplete="new-password"
                 variant="filled"
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
             />
             <InputRightElement>
                 <IconButton
