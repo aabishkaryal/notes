@@ -49,12 +49,12 @@ export default function Login() {
 }
 
 type AuthError = {
-    username?: string;
+    email?: string;
     password?: string;
 };
 
 function SignUpPanel() {
-    const [username, updateUsername] = useState("");
+    const [email, updateEmail] = useState("");
     const [password, updatePassword] = useState("");
     const [confirmPassword, updateConfirmPassword] = useState("");
 
@@ -66,12 +66,12 @@ function SignUpPanel() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!username) {
-            updateError({ username: "Please enter an email." });
+        if (!email) {
+            updateError({ email: "Please enter an email." });
         } else if (!password) {
             updateError({ password: "Please enter a password." });
-        } else if (!validateEmail(username)) {
-            updateError({ username: "Please enter a valid email." });
+        } else if (!validateEmail(email)) {
+            updateError({ email: "Please enter a valid email." });
         } else if (!validatePassword(password)) {
             updateError({
                 password:
@@ -85,11 +85,11 @@ function SignUpPanel() {
             try {
                 const signUpResponse = await fetch("/api/signup", {
                     method: "POST",
-                    body: JSON.stringify({ username, password }),
+                    body: JSON.stringify({ username: email, password }),
                 });
                 if (signUpResponse.status == 200) {
                     const signInResponse = await signIn("credentials", {
-                        username,
+                        email,
                         password,
                         redirect: false,
                     });
@@ -160,14 +160,14 @@ function SignUpPanel() {
                             variant="filled"
                             autoComplete="username"
                             placeholder="Email Address"
-                            value={username}
-                            onChange={(e) => updateUsername(e.target.value)}
-                            isInvalid={!!error.username}
+                            value={email}
+                            onChange={(e) => updateEmail(e.target.value)}
+                            isInvalid={!!error.email}
                         />
                     </InputGroup>
-                    {error.username && (
+                    {error.email && (
                         <Text color="red" fontSize="xs">
-                            {error.username}
+                            {error.email}
                         </Text>
                     )}
                 </FormControl>
@@ -196,7 +196,7 @@ function SignUpPanel() {
 }
 
 function LoginPanel() {
-    const [username, updateUsername] = useState("");
+    const [email, updateEmail] = useState("");
     const [password, updatePassword] = useState("");
 
     const [error, updateError] = useState<AuthError>({});
@@ -207,18 +207,18 @@ function LoginPanel() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!username) {
-            updateError({ username: "Please enter an email." });
+        if (!email) {
+            updateError({ email: "Please enter an email." });
         } else if (!password) {
             updateError({ password: "Please enter a password." });
-        } else if (!validateEmail(username)) {
-            updateError({ username: "Please enter a valid email." });
+        } else if (!validateEmail(email)) {
+            updateError({ email: "Please enter a valid email." });
         } else {
             updateError({});
             updateLoading(true);
             try {
                 const signInResponse = await signIn("credentials", {
-                    username,
+                    email,
                     password,
                     redirect: false,
                 });
@@ -282,14 +282,14 @@ function LoginPanel() {
                             variant="filled"
                             autoComplete="username"
                             placeholder="Email Address"
-                            value={username}
-                            onChange={(e) => updateUsername(e.target.value)}
-                            isInvalid={!!error.username}
+                            value={email}
+                            onChange={(e) => updateEmail(e.target.value)}
+                            isInvalid={!!error.email}
                         />
                     </InputGroup>
-                    {error.username && (
+                    {error.email && (
                         <Text color="red" fontSize="xs">
-                            {error.username}
+                            {error.email}
                         </Text>
                     )}
                 </FormControl>
