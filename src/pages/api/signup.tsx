@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { validateEmail, validatePassword } from "@app/utils";
 import { User } from "@app/types";
-import bcrypt from "bcrypt";
+import { hash } from "bcrypt";
 import { fetchAll } from "@app/db";
 
 const deta = Deta(process.env.DETA_PROJECT_KEY);
@@ -38,7 +38,7 @@ export default async function SignUp(
             });
 
         const uuid = uuidv4();
-        const encrypted = await bcrypt.hash(password, 10);
+        const encrypted = await hash(password, 10);
         const user: User = {
             key: uuid,
             email,
