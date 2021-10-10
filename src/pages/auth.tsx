@@ -15,15 +15,16 @@ import {
     InputLeftElement,
     Button,
     FormControl,
+    useToast,
 } from "@chakra-ui/react";
 import { MdOutlineEmail, MdLogin } from "react-icons/md";
 import { FiUserPlus } from "react-icons/fi";
 
 import { GetServerSideProps } from "next";
-import { getSession } from "next-auth/client";
+import { getSession, signIn } from "next-auth/client";
 
 import { PasswordInput } from "@components/passwordInput";
-import { validateEmail } from "@app/utils";
+import { validateEmail, validatePassword } from "@app/utils";
 
 export default function Login() {
     return (
@@ -56,20 +57,82 @@ function SignUpPanel() {
     const [password, updatePassword] = useState("");
     const [confirmPassword, updateConfirmPassword] = useState("");
     const [error, updateError] = useState<AuthError>({});
+    const [loading, updateLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const toast = useToast();
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Sign Up", { email, password, confirmPassword });
         if (!email) {
             updateError({ email: "Please enter an email." });
         } else if (!password) {
             updateError({ password: "Please enter a password." });
         } else if (!validateEmail(email)) {
             updateError({ email: "Please enter a valid email." });
+        } else if (!validatePassword(password)) {
+            updateError({
+                password:
+                    "Passwords must be at least 8 character long with 2 numbers.",
+            });
         } else if (password !== confirmPassword) {
             updateError({ password: "Passwords do not match." });
         } else {
             updateError({});
+            updateLoading(true);
+            try {
+                const signUpResponse = await fetch("/api/signup", {
+                    method: "POST",
+                    body: JSON.stringify({ email, password }),
+                });
+                if (signUpResponse.status == 200) {
+                    const signInResponse = await signIn("credentials", {
+                        email,
+                        password,
+                        redirect: false,
+                    });
+                    if (signInResponse?.ok) {
+                        toast({
+                            title: "Success!",
+                            description: "You have successfully signed up.",
+                            status: "success",
+                            duration: 5000,
+                            isClosable: true,
+                            position: "top-right",
+                        });
+                    } else {
+                        toast({
+                            title: "Error!",
+                            description: "There was an error signing you in.",
+                            status: "error",
+                            duration: 5000,
+                            isClosable: true,
+                            position: "top-right",
+                        });
+                    }
+                } else {
+                    const json = await signUpResponse.json();
+                    toast({
+                        title: "Error",
+                        description: json.error,
+                        status: "error",
+                        duration: 5000,
+                        isClosable: true,
+                        position: "top-right",
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+                toast({
+                    title: "Error!",
+                    description: "Something went wrong.",
+                    status: "error",
+                    duration: 4000,
+                    isClosable: true,
+                    position: "top-right",
+                });
+            } finally {
+                updateLoading(false);
+            }
         }
     };
 
@@ -120,7 +183,11 @@ function SignUpPanel() {
                     onChange={(value) => updateConfirmPassword(value)}
                     error={error.password}
                 />
-                <Button type="submit" leftIcon={<FiUserPlus />}>
+                <Button
+                    type="submit"
+                    leftIcon={<FiUserPlus />}
+                    isLoading={loading}
+                >
                     Sign Up
                 </Button>
             </VStack>
