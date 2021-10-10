@@ -222,7 +222,16 @@ function LoginPanel() {
                     password,
                     redirect: false,
                 });
-                if (signInResponse?.ok) {
+                if (signInResponse?.error) {
+                    toast({
+                        title: "Error!",
+                        description: signInResponse?.error,
+                        status: "error",
+                        duration: 5000,
+                        isClosable: true,
+                        position: "top-right",
+                    });
+                } else {
                     toast({
                         title: "Success!",
                         description: "You have successfully logged in.",
@@ -232,18 +241,9 @@ function LoginPanel() {
                         position: "top-right",
                     });
                     setTimeout(() => router.replace("/"), 1000);
-                } else {
-                    toast({
-                        title: "Error!",
-                        description: signInResponse?.error,
-                        status: "error",
-                        duration: 5000,
-                        isClosable: true,
-                        position: "top-right",
-                    });
                 }
             } catch (error) {
-                console.error(error);
+                console.error({ error });
                 toast({
                     title: "Error!",
                     description: "Something went wrong.",
