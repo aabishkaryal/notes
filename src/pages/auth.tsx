@@ -101,7 +101,7 @@ function SignUpPanel() {
                             isClosable: true,
                             position: "top-right",
                         });
-                        setTimeout(() => router.replace("/"), 1000);
+                        setTimeout(() => router.replace("/dashboard"), 1000);
                     } else {
                         toast({
                             title: signInResponse?.error,
@@ -240,7 +240,7 @@ function LoginPanel() {
                         isClosable: true,
                         position: "top-right",
                     });
-                    setTimeout(() => router.replace("/"), 1000);
+                    setTimeout(() => router.replace("/dashboard"), 1000);
                 }
             } catch (error) {
                 console.error({ error });
