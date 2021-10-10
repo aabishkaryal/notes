@@ -21,6 +21,7 @@ import { MdOutlineEmail, MdLogin } from "react-icons/md";
 import { FiUserPlus } from "react-icons/fi";
 
 import { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
 import { getSession, signIn } from "next-auth/client";
 
 import { PasswordInput } from "@components/passwordInput";
@@ -48,27 +49,29 @@ export default function Login() {
 }
 
 type AuthError = {
-    email?: string;
+    username?: string;
     password?: string;
 };
 
 function SignUpPanel() {
-    const [email, updateEmail] = useState("");
+    const [username, updateUsername] = useState("");
     const [password, updatePassword] = useState("");
     const [confirmPassword, updateConfirmPassword] = useState("");
+
     const [error, updateError] = useState<AuthError>({});
     const [loading, updateLoading] = useState(false);
 
     const toast = useToast();
+    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!email) {
-            updateError({ email: "Please enter an email." });
+        if (!username) {
+            updateError({ username: "Please enter an email." });
         } else if (!password) {
             updateError({ password: "Please enter a password." });
-        } else if (!validateEmail(email)) {
-            updateError({ email: "Please enter a valid email." });
+        } else if (!validateEmail(username)) {
+            updateError({ username: "Please enter a valid email." });
         } else if (!validatePassword(password)) {
             updateError({
                 password:
@@ -82,27 +85,26 @@ function SignUpPanel() {
             try {
                 const signUpResponse = await fetch("/api/signup", {
                     method: "POST",
-                    body: JSON.stringify({ email, password }),
+                    body: JSON.stringify({ username, password }),
                 });
                 if (signUpResponse.status == 200) {
                     const signInResponse = await signIn("credentials", {
-                        email,
+                        username,
                         password,
                         redirect: false,
                     });
                     if (signInResponse?.ok) {
                         toast({
-                            title: "Success!",
-                            description: "You have successfully signed up.",
+                            title: "You have successfully signed up.",
                             status: "success",
-                            duration: 5000,
+                            duration: 2000,
                             isClosable: true,
                             position: "top-right",
                         });
+                        setTimeout(() => router.replace("/"), 1000);
                     } else {
                         toast({
-                            title: "Error!",
-                            description: "There was an error signing you in.",
+                            title: signInResponse?.error,
                             status: "error",
                             duration: 5000,
                             isClosable: true,
@@ -112,19 +114,17 @@ function SignUpPanel() {
                 } else {
                     const json = await signUpResponse.json();
                     toast({
-                        title: "Error",
-                        description: json.error,
+                        title: json.error,
                         status: "error",
                         duration: 5000,
                         isClosable: true,
                         position: "top-right",
                     });
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.error(error);
                 toast({
-                    title: "Error!",
-                    description: "Something went wrong.",
+                    title: error.message,
                     status: "error",
                     duration: 4000,
                     isClosable: true,
@@ -160,14 +160,14 @@ function SignUpPanel() {
                             variant="filled"
                             autoComplete="username"
                             placeholder="Email Address"
-                            value={email}
-                            onChange={(e) => updateEmail(e.target.value)}
-                            isInvalid={!!error.email}
+                            value={username}
+                            onChange={(e) => updateUsername(e.target.value)}
+                            isInvalid={!!error.username}
                         />
                     </InputGroup>
-                    {error.email && (
+                    {error.username && (
                         <Text color="red" fontSize="xs">
-                            {error.email}
+                            {error.username}
                         </Text>
                     )}
                 </FormControl>
@@ -196,21 +196,65 @@ function SignUpPanel() {
 }
 
 function LoginPanel() {
-    const [email, updateEmail] = useState("");
+    const [username, updateUsername] = useState("");
     const [password, updatePassword] = useState("");
-    const [error, updateError] = useState<AuthError>({});
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const [error, updateError] = useState<AuthError>({});
+    const [loading, updateLoading] = useState(false);
+
+    const toast = useToast();
+    const router = useRouter();
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Log In", { email, password });
-        if (!email) {
-            updateError({ email: "Please enter an email." });
+        if (!username) {
+            updateError({ username: "Please enter an email." });
         } else if (!password) {
             updateError({ password: "Please enter a password." });
-        } else if (!validateEmail(email)) {
-            updateError({ email: "Please enter a valid email." });
+        } else if (!validateEmail(username)) {
+            updateError({ username: "Please enter a valid email." });
         } else {
             updateError({});
+            updateLoading(true);
+            try {
+                const signInResponse = await signIn("credentials", {
+                    username,
+                    password,
+                    redirect: false,
+                });
+                if (signInResponse?.ok) {
+                    toast({
+                        title: "Success!",
+                        description: "You have successfully logged in.",
+                        status: "success",
+                        duration: 2000,
+                        isClosable: true,
+                        position: "top-right",
+                    });
+                    setTimeout(() => router.replace("/"), 1000);
+                } else {
+                    toast({
+                        title: "Error!",
+                        description: signInResponse?.error,
+                        status: "error",
+                        duration: 5000,
+                        isClosable: true,
+                        position: "top-right",
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+                toast({
+                    title: "Error!",
+                    description: "Something went wrong.",
+                    status: "error",
+                    duration: 4000,
+                    isClosable: true,
+                    position: "top-right",
+                });
+            } finally {
+                updateLoading(false);
+            }
         }
     };
 
@@ -238,14 +282,14 @@ function LoginPanel() {
                             variant="filled"
                             autoComplete="username"
                             placeholder="Email Address"
-                            value={email}
-                            onChange={(e) => updateEmail(e.target.value)}
-                            isInvalid={!!error.email}
+                            value={username}
+                            onChange={(e) => updateUsername(e.target.value)}
+                            isInvalid={!!error.username}
                         />
                     </InputGroup>
-                    {error.email && (
+                    {error.username && (
                         <Text color="red" fontSize="xs">
-                            {error.email}
+                            {error.username}
                         </Text>
                     )}
                 </FormControl>
@@ -255,7 +299,11 @@ function LoginPanel() {
                     onChange={(value) => updatePassword(value)}
                     error={error.password}
                 />
-                <Button type="submit" rightIcon={<MdLogin />}>
+                <Button
+                    type="submit"
+                    rightIcon={<MdLogin />}
+                    isLoading={loading}
+                >
                     Log In
                 </Button>
             </VStack>
