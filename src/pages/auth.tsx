@@ -85,7 +85,7 @@ function SignUpPanel() {
             try {
                 const signUpResponse = await fetch("/api/signup", {
                     method: "POST",
-                    body: JSON.stringify({ username: email, password }),
+                    body: JSON.stringify({ email, password }),
                 });
                 if (signUpResponse.status == 200) {
                     const signInResponse = await signIn("credentials", {
