@@ -1,17 +1,30 @@
 import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
 
+import { compare } from "bcrypt";
+
+import { Deta } from "deta";
+import { fetchAll } from "@app/db";
+import { User } from "@app/types";
+
+const deta = Deta(process.env.DETA_PROJECT_KEY);
+const db = deta.Base("User");
+
 export default NextAuth({
     // Configure one or more authentication providers
     providers: [
         Providers.Credentials({
             name: "Credentials",
             credentials: {
-                username: { label: "Username", type: "text" },
+                email: { label: "Email", type: "text" },
                 password: { label: "Password", type: "password" },
             },
-            async authorize() {
-                return {};
+            async authorize({ email, password }) {
+                const users = await fetchAll<User>(db, { email });
+                if (users.length !== 1) throw new Error("Invalid Credentials.");
+                const match = await compare(password, users[0].password);
+                if (match) return users[0];
+                throw new Error("Invalid Credentials.");
             },
         }),
     ],
