@@ -22,6 +22,7 @@ import { FiUserPlus } from "react-icons/fi";
 
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
+import Head from "next/head";
 import { getSession, signIn } from "next-auth/client";
 
 import { PasswordInput } from "@components/passwordInput";
@@ -29,22 +30,27 @@ import { validateEmail, validatePassword } from "@app/utils";
 
 export default function Login() {
     return (
-        <Center width="100%" height="100vh">
-            <Tabs boxShadow="md" variant="enclosed" isLazy isFitted>
-                <TabList>
-                    <Tab fontSize={{ base: "lg", md: "xl" }}>Sign Up</Tab>
-                    <Tab fontSize={{ base: "lg", md: "xl" }}>Log In</Tab>
-                </TabList>
-                <TabPanels>
-                    <TabPanel>
-                        <SignUpPanel />
-                    </TabPanel>
-                    <TabPanel>
-                        <LoginPanel />
-                    </TabPanel>
-                </TabPanels>
-            </Tabs>
-        </Center>
+        <>
+            <Head>
+                <title>Log In</title>
+            </Head>
+            <Center width="100%" height="100vh">
+                <Tabs boxShadow="md" variant="enclosed" isLazy isFitted>
+                    <TabList>
+                        <Tab fontSize={{ base: "lg", md: "xl" }}>Sign Up</Tab>
+                        <Tab fontSize={{ base: "lg", md: "xl" }}>Log In</Tab>
+                    </TabList>
+                    <TabPanels>
+                        <TabPanel>
+                            <SignUpPanel />
+                        </TabPanel>
+                        <TabPanel>
+                            <LoginPanel />
+                        </TabPanel>
+                    </TabPanels>
+                </Tabs>
+            </Center>
+        </>
     );
 }
 

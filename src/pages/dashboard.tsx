@@ -1,9 +1,18 @@
 import { Box } from "@chakra-ui/react";
+
 import { GetServerSideProps } from "next";
+import Head from "next/head";
 import { getSession } from "next-auth/client";
 
 export default function Dashboard() {
-    return <Box>Dashboard</Box>;
+    return (
+        <>
+            <Head>
+                <title>Dashboard</title>
+            </Head>
+            <Box>Dashboard</Box>
+        </>
+    );
 }
 
 export const getServerSideProps: GetServerSideProps<{}> = async (ctx) => {
