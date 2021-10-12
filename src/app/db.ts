@@ -1,4 +1,5 @@
 import Base from "deta/dist/types/base";
+import Drive from "deta/dist/types/drive";
 import { CompositeType } from "deta/dist/types/types/basic";
 
 export async function fetchAll<T>(
@@ -12,4 +13,8 @@ export async function fetchAll<T>(
         items = items.concat(fetchResponse.items);
     }
     return items as any as T[];
+}
+
+export async function fetchNotes(db: Base, drive: Drive, categories: string[]) {
+    return {};
 }
