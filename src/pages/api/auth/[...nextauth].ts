@@ -22,7 +22,7 @@ export default NextAuth({
             async authorize({ email, password }) {
                 const users = await fetchAll<User>(db, { email });
                 if (users.length !== 1) throw new Error("Invalid Credentials.");
-                const match = await compare(password, users[0].password);
+                const match = await compare(password, users[0].passwordHash);
                 if (match) return users[0];
                 throw new Error("Invalid Credentials.");
             },
