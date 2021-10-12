@@ -7,6 +7,7 @@ export type User = {
 
 export type Category = {
     key: string;
+    name: string;
     notes: string[];
 };
 

@@ -49,6 +49,7 @@ export default async function SignUp(
         } as User;
         const defaultCategory = {
             key: defaultCategoryUUID,
+            name: "Default",
             notes: [],
         } as Category;
         await userDB.put(user, userUUID);
