@@ -28,14 +28,26 @@ import { getSession, signIn } from "next-auth/client";
 import { PasswordInput } from "@components/passwordInput";
 import { validateEmail, validatePassword } from "@app/utils";
 
-export default function Login() {
+type Props = {
+    defaultIndex?: number;
+};
+
+export default function Auth({ defaultIndex = 0 }: Props) {
+    const [activeIndex, updateActiveIndex] = useState(defaultIndex);
     return (
         <>
             <Head>
-                <title>Log In</title>
+                <title>{activeIndex == 0 ? "Sign Up" : "Log In"}</title>
             </Head>
             <Center width="100%" height="100vh">
-                <Tabs boxShadow="md" variant="enclosed" isLazy isFitted>
+                <Tabs
+                    boxShadow="md"
+                    variant="enclosed"
+                    index={activeIndex}
+                    onChange={(i) => updateActiveIndex(i)}
+                    isLazy
+                    isFitted
+                >
                     <TabList>
                         <Tab fontSize={{ base: "lg", md: "xl" }}>Sign Up</Tab>
                         <Tab fontSize={{ base: "lg", md: "xl" }}>Log In</Tab>
@@ -103,7 +115,7 @@ function SignUpPanel() {
                         toast({
                             title: "You have successfully signed up.",
                             status: "success",
-                            duration: 2000,
+                            duration: 1000,
                             isClosable: true,
                             position: "top-right",
                         });
@@ -242,7 +254,7 @@ function LoginPanel() {
                         title: "Success!",
                         description: "You have successfully logged in.",
                         status: "success",
-                        duration: 2000,
+                        duration: 1000,
                         isClosable: true,
                         position: "top-right",
                     });
@@ -317,8 +329,8 @@ function LoginPanel() {
     );
 }
 
-export const getServerSideProps: GetServerSideProps<{}> = async (ctx) => {
-    const session = await getSession(ctx);
+export const getServerSideProps: GetServerSideProps<{}> = async ({ req }) => {
+    const session = await getSession({ req });
     if (session && session.user)
         return {
             redirect: {
@@ -326,7 +338,13 @@ export const getServerSideProps: GetServerSideProps<{}> = async (ctx) => {
                 permanent: false,
             },
         };
+
+    const url = new URL(req.url || "", `http://${req.headers.host}`);
+    const isLogin = url.searchParams.has("login");
+
     return {
-        props: {},
+        props: {
+            defaultIndex: isLogin ? 1 : 0,
+        },
     };
 };
