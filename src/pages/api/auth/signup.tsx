@@ -14,6 +14,11 @@ export default async function SignUp(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
+    if (req.method != "POST")
+        return res
+            .status(405)
+            .json({ error: "Only POST method is supported." });
+
     const { email, password } = JSON.parse(req.body);
     if (!email || !password)
         return res.status(400).json({

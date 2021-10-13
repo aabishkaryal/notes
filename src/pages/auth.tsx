@@ -101,7 +101,7 @@ function SignUpPanel() {
             updateError({});
             updateLoading(true);
             try {
-                const signUpResponse = await fetch("/api/signup", {
+                const signUpResponse = await fetch("/api/auth/signup", {
                     method: "POST",
                     body: JSON.stringify({ email, password }),
                 });
