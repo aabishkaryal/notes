@@ -1,6 +1,7 @@
 import Base from "deta/dist/types/base";
 import Drive from "deta/dist/types/drive";
 import { CompositeType } from "deta/dist/types/types/basic";
+import { Category } from "@app/types";
 
 export async function fetchAll<T>(
     db: Base,
@@ -15,6 +16,11 @@ export async function fetchAll<T>(
     return items as any as T[];
 }
 
-export async function fetchNotes(db: Base, drive: Drive, categories: string[]) {
+export async function fetchNotes(drive: Drive, categories: Category[]) {
     return {};
+}
+
+export async function fetchCategories(db: Base, categoryIDs: string[]) {
+    const categories = categoryIDs.map(async (c) => await db.get(c));
+    return categories as any as Category[];
 }
