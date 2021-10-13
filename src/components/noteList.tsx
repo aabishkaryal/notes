@@ -6,26 +6,20 @@ import {
     AccordionIcon,
     AccordionItem,
     AccordionPanel,
-    Button,
     Flex,
     Text,
-    FormControl,
-    FormHelperText,
-    FormLabel,
     Input,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalHeader,
-    ModalOverlay,
-    useDisclosure,
     useToast,
     Heading,
+    InputGroup,
+    InputRightElement,
+    IconButton,
+    VStack,
 } from "@chakra-ui/react";
 
 import { Category, Note } from "@app/types";
 import { AddIcon } from "@chakra-ui/icons";
+import { Notes } from "@components/notes";
 
 type Props = {
     notes: { [name: string]: Note[] };
@@ -39,7 +33,6 @@ export function NoteList({ notes: n, categories: c, updateSelected }: Props) {
     const [newCategoryName, updateNewCategoryName] = useState("");
 
     const [loading, updateLoading] = useState(false);
-    const { isOpen, onOpen, onClose } = useDisclosure();
     const toast = useToast();
 
     const addCategory = async (e: React.FormEvent) => {
@@ -52,6 +45,7 @@ export function NoteList({ notes: n, categories: c, updateSelected }: Props) {
         const json = await res.json();
         if (res.status == 200) {
             updateCategories([...categories, json.category]);
+            updateNotes({ ...notes, [json.category.key]: [] });
             updateNewCategoryName("");
             toast({
                 title: json.message,
@@ -70,15 +64,13 @@ export function NoteList({ notes: n, categories: c, updateSelected }: Props) {
             });
         }
         updateLoading(false);
-        setTimeout(onClose);
     };
     return (
-        <Flex
+        <VStack
             width={{ base: "100%", sm: "75%" }}
-            flexWrap="wrap"
-            flexDirection="column"
             alignItems="center"
             padding={{ base: 3 }}
+            spacing={{ base: 2 }}
         >
             <Heading>Your Notes</Heading>
             <Accordion width="100%" allowMultiple allowToggle>
@@ -94,61 +86,38 @@ export function NoteList({ notes: n, categories: c, updateSelected }: Props) {
                                     <AccordionIcon />
                                 </Flex>
                             </AccordionButton>
-                            <AccordionPanel></AccordionPanel>
+                            <AccordionPanel>
+                                <Notes
+                                    notes={notes[c.key] || []}
+                                    updateSelectedNote={updateSelected}
+                                    categoryID={c.key}
+                                />
+                            </AccordionPanel>
                         </AccordionItem>
                     );
                 })}
             </Accordion>
-            <Button
-                variant="solid"
-                leftIcon={<AddIcon />}
-                onClick={onOpen}
-                size="md"
-                width="180px"
-                marginY={{ base: 3 }}
-            >
-                Add Category
-            </Button>
-            <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay />
-                <ModalContent>
-                    <ModalHeader>New Category</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody>
-                        <Flex
-                            as="form"
-                            onSubmit={addCategory}
-                            flexDir="column"
-                            alignItems="center"
-                        >
-                            <FormControl id="category-name" isRequired>
-                                <FormLabel>Category Name</FormLabel>
-                                <Input
-                                    value={newCategoryName}
-                                    onChange={(e) =>
-                                        updateNewCategoryName(e.target.value)
-                                    }
-                                    maxLength={40}
-                                />
-                                {newCategoryName.length >= 40 && (
-                                    <FormHelperText fontSize="xs">
-                                        Category name is too long
-                                    </FormHelperText>
-                                )}
-                            </FormControl>
-                            <Button
-                                variant="solid"
-                                type="submit"
-                                width="50px"
-                                marginY={{ base: 3 }}
-                                isLoading={loading}
-                            >
-                                Add
-                            </Button>
-                        </Flex>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
-        </Flex>
+            <InputGroup>
+                <Input
+                    value={newCategoryName}
+                    onChange={(e) => updateNewCategoryName(e.target.value)}
+                    maxLength={40}
+                    placeholder="New Category"
+                    variant="filled"
+                />
+                <InputRightElement>
+                    <IconButton
+                        icon={<AddIcon />}
+                        onClick={addCategory}
+                        aria-label="Add new category of notes"
+                        variant="ghost"
+                        isRound
+                        size="sm"
+                        color="gray.500"
+                        isLoading={loading}
+                    />
+                </InputRightElement>
+            </InputGroup>
+        </VStack>
     );
 }
