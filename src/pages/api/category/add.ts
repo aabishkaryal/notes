@@ -43,6 +43,8 @@ export default async function AddCategory(
             category: newCategory,
         });
     } catch (error) {
+        console.debug("Add Category Error", { error });
+
         return res.status(500).json({ error: "Failed to add category." });
     }
 }
