@@ -29,7 +29,11 @@ export default function Dashboard({ notes, categories }: Props) {
             <Header />
             {isMobile ? (
                 <Flex width="100%" justifyContent="center">
-                    <NoteList notes={notes} categories={categories} />
+                    <NoteList
+                        notes={notes}
+                        categories={categories}
+                        updateSelected={() => {}}
+                    />
                 </Flex>
             ) : (
                 <>Not Mobile</>
@@ -51,13 +55,14 @@ export const getServerSideProps: GetServerSideProps<{}> = async (ctx) => {
     const deta = Deta(process.env.DETA_PROJECT_KEY);
     const userDB = deta.Base("User");
     const categoryDB = deta.Base("Category");
-    const notesDrive = deta.Drive("Notes");
+    const notesDB = deta.Base("Notes");
 
     const email = session.user.email || "";
     const [user, ..._] = await fetchAll<User>(userDB, { email });
     const categories = await fetchCategories(categoryDB, user.categories);
-    const notes = await fetchNotes(notesDrive, categories);
+    const notes = await fetchNotes(notesDB, categories);
+    console.debug("notes", notes);
     return {
-        props: { notes, categories },
+        props: { notes: {}, categories },
     };
 };
