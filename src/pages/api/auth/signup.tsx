@@ -3,7 +3,7 @@ import { Deta } from "deta";
 import { v4 as uuidv4 } from "uuid";
 
 import { validateEmail, validatePassword } from "@app/utils";
-import { Category, User } from "@app/types";
+import { User } from "@app/types";
 import { hash } from "bcrypt";
 import { fetchAll } from "@app/db";
 
