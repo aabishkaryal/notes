@@ -9,7 +9,6 @@ import { fetchAll } from "@app/db";
 
 const deta = Deta(process.env.DETA_PROJECT_KEY);
 const userDB = deta.Base("User");
-const categoryDB = deta.Base("Category");
 
 export default async function SignUp(
     req: NextApiRequest,
@@ -32,7 +31,6 @@ export default async function SignUp(
         });
 
     const userUUID = uuidv4();
-    const defaultCategoryUUID = uuidv4();
     try {
         const users = await fetchAll<User>(userDB, { email });
         if (users.length > 0)
@@ -45,15 +43,10 @@ export default async function SignUp(
             key: userUUID,
             email,
             passwordHash: encrypted,
-            categories: [defaultCategoryUUID],
+            categories: [],
         } as User;
-        const defaultCategory = {
-            key: defaultCategoryUUID,
-            name: "Default",
-            notes: [],
-        } as Category;
+
         await userDB.put(user, userUUID);
-        await categoryDB.put(defaultCategory, defaultCategoryUUID);
         return res.status(200).send({ message: "User created successfully" });
     } catch (error) {
         console.debug("SignUp Error", { error });
