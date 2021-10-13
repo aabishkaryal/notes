@@ -1,24 +1,39 @@
+import React from "react";
+
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { getSession } from "next-auth/client";
 
-import { Header } from "@components/header";
-import { fetchAll, fetchNotes } from "@app/db";
-import { User } from "@app/types";
+import { Flex, useBreakpointValue } from "@chakra-ui/react";
+
 import { Deta } from "deta";
 
+import { fetchAll, fetchCategories, fetchNotes } from "@app/db";
+import { Category, Note, User } from "@app/types";
+
+import { Header } from "@components/header";
+import { NoteList } from "@components/noteList";
+
 type Props = {
-    notes: { [name: string]: string[] };
+    notes: { [name: string]: Note[] };
+    categories: Category[];
 };
 
-export default function Dashboard({ notes }: Props) {
-    console.debug({ notes });
+export default function Dashboard({ notes, categories }: Props) {
+    const isMobile = useBreakpointValue({ base: true, md: false });
     return (
         <>
             <Head>
                 <title>Dashboard</title>
             </Head>
             <Header />
+            {isMobile ? (
+                <Flex width="100%" justifyContent="center">
+                    <NoteList notes={notes} categories={categories} />
+                </Flex>
+            ) : (
+                <>Not Mobile</>
+            )}
         </>
     );
 }
@@ -40,8 +55,9 @@ export const getServerSideProps: GetServerSideProps<{}> = async (ctx) => {
 
     const email = session.user.email || "";
     const [user, ..._] = await fetchAll<User>(userDB, { email });
-    const notes = await fetchNotes(categoryDB, notesDrive, user.categories);
+    const categories = await fetchCategories(categoryDB, user.categories);
+    const notes = await fetchNotes(notesDrive, categories);
     return {
-        props: { notes },
+        props: { notes, categories },
     };
 };
