@@ -21,6 +21,8 @@ export async function fetchNotes(drive: Drive, categories: Category[]) {
 }
 
 export async function fetchCategories(db: Base, categoryIDs: string[]) {
-    const categories = categoryIDs.map(async (c) => await db.get(c));
+    const categories = await Promise.all(
+        categoryIDs.map(async (c) => await db.get(c))
+    );
     return categories as any as Category[];
 }
