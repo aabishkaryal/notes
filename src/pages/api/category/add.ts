@@ -38,12 +38,10 @@ export default async function AddCategory(
     try {
         await userDB.put(user, user.key);
         await categoryDB.put(newCategory, categoryUUID);
-        return res
-            .status(200)
-            .json({
-                message: `Category ${name} created successfully.`,
-                category: newCategory,
-            });
+        return res.status(200).json({
+            message: `${name} created successfully.`,
+            category: newCategory,
+        });
     } catch (error) {
         return res.status(500).json({ error: "Failed to add category." });
     }
