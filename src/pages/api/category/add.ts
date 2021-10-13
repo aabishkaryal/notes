@@ -40,7 +40,7 @@ export default async function AddCategory(
         await categoryDB.put(newCategory, categoryUUID);
         return res
             .status(200)
-            .json({ message: "Category created successfully." });
+            .json({ message: `Category ${name} created successfully.` });
     } catch (error) {
         return res.status(500).json({ error: "Failed to add category." });
     }
