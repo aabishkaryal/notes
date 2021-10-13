@@ -48,7 +48,7 @@ export default async function SignUp(
             key: userUUID,
             email,
             passwordHash: encrypted,
-            categories: [],
+            categoryIDs: [],
         } as User;
 
         await userDB.put(user, userUUID);

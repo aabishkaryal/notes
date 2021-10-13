@@ -33,8 +33,9 @@ export default async function AddCategory(
         key: noteUUID,
         topic,
         content: "",
+        categoryID: category.key,
     } as Note;
-    category.notes.push(noteUUID);
+    category.noteIDs.push(noteUUID);
     try {
         await categoryDB.put(category, category.key);
         await notesDB.put(newNote, noteUUID);

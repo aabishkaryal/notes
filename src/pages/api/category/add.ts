@@ -32,9 +32,10 @@ export default async function AddCategory(
     const newCategory = {
         key: categoryUUID,
         name,
-        notes: [],
+        noteIDs: [],
+        userID: user.key,
     } as Category;
-    user.categories.push(categoryUUID);
+    user.categoryIDs.push(categoryUUID);
     try {
         await userDB.put(user, user.key);
         await categoryDB.put(newCategory, categoryUUID);
