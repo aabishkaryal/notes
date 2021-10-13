@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { GetServerSideProps } from "next";
 import Head from "next/head";
@@ -21,6 +21,7 @@ type Props = {
 
 export default function Dashboard({ notes, categories }: Props) {
     const isMobile = useBreakpointValue({ base: true, md: false });
+    const [activeNote, updateActiveNote] = useState<Note | undefined>();
     return (
         <>
             <Head>
@@ -32,7 +33,9 @@ export default function Dashboard({ notes, categories }: Props) {
                     <NoteList
                         notes={notes}
                         categories={categories}
-                        updateSelected={() => {}}
+                        updateSelected={(note) => {
+                            updateActiveNote(note);
+                        }}
                     />
                 </Flex>
             ) : (
@@ -59,10 +62,9 @@ export const getServerSideProps: GetServerSideProps<{}> = async (ctx) => {
 
     const email = session.user.email || "";
     const [user, ..._] = await fetchAll<User>(userDB, { email });
-    const categories = await fetchCategories(categoryDB, user.categories);
+    const categories = await fetchCategories(categoryDB, user.categoryIDs);
     const notes = await fetchNotes(notesDB, categories);
-    console.debug("notes", notes);
     return {
-        props: { notes: {}, categories },
+        props: { notes, categories },
     };
 };
