@@ -33,6 +33,7 @@ export default async function AddCategory(
         key: noteUUID,
         topic,
         content: "",
+        type: "Markdown",
         categoryID: category.key,
     } as Note;
     category.noteIDs.push(noteUUID);

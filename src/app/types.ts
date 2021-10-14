@@ -17,4 +17,5 @@ export type Note = {
     topic: string;
     content: string;
     categoryID: string;
+    type: "Text" | "Markdown";
 };
