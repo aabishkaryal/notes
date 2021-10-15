@@ -15,7 +15,7 @@ import { AddIcon } from "@chakra-ui/icons";
 
 type Props = {
     notes: Note[];
-    updateSelectedNote: (note: Note) => void;
+    updateSelectedNote: (note?: Note) => void;
     categoryID: string;
 };
 
