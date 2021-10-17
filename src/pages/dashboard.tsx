@@ -4,6 +4,8 @@ import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { getSession } from "next-auth/client";
 
+import { Deta } from "deta";
+
 import {
     Accordion,
     AccordionButton,
@@ -20,19 +22,25 @@ import {
     VStack,
     Text,
     useToast,
+    useDisclosure,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalCloseButton,
+    ModalBody,
+    useBoolean,
 } from "@chakra-ui/react";
-
-import { Deta } from "deta";
+import { AddIcon } from "@chakra-ui/icons";
 
 import { fetchAll, fetchCategories, fetchNotes } from "@app/db";
 import { Category, Note, User } from "@app/types";
 
 import { Header } from "@components/header";
-import { AddIcon } from "@chakra-ui/icons";
-import { Notes } from "@components/notes";
+import { NoteTitles } from "@components/noteTitles";
+import { PreviewNote } from "@components/previewNote";
 
 type Props = {
-    notes: { [name: string]: Note[] };
+    notes: { [key: string]: Note[] };
     categories: Category[];
 };
 
@@ -44,11 +52,14 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
     const [categories, updateCategories] = useState(c);
     const [newCategoryName, updateNewCategoryName] = useState("");
 
-    const [loading, updateLoading] = useState(false);
+    const [loading, updateLoading] = useBoolean(false);
+    const [previewLoading, updatePreviewLoading] = useBoolean(false);
+
+    const { isOpen, onOpen, onClose } = useDisclosure();
     const toast = useToast();
 
     const addCategory = async (e: React.FormEvent) => {
-        updateLoading(true);
+        updateLoading.on();
         e.preventDefault();
         const res = await fetch("/api/category/add", {
             method: "POST",
@@ -75,7 +86,53 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                 position: "top-right",
             });
         }
-        updateLoading(false);
+        updateLoading.off();
+    };
+
+    const handleDeleteNote = async (note: Note) => {
+        updatePreviewLoading.on();
+        const res = await fetch("/api/note/delete", {
+            method: "POST",
+            body: JSON.stringify({ note }),
+        });
+        try {
+            const json = await res.json();
+            if (res.status == 200) {
+                toast({
+                    title: json.message,
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                    position: "top-right",
+                });
+                updateNotes({
+                    ...notes,
+                    [note.categoryID]: notes[note.categoryID].filter(
+                        (n) => n.key != note.key
+                    ),
+                });
+                updateActiveNote(undefined);
+            } else {
+                toast({
+                    title: json.error,
+                    status: "error",
+                    duration: 3000,
+                    isClosable: true,
+                    position: "top-right",
+                });
+            }
+        } catch (error) {
+            console.debug({ error });
+            toast({
+                title: "Check your internet connection and try again.",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+                position: "top-right",
+            });
+        } finally {
+            updatePreviewLoading.off();
+        }
     };
 
     return (
@@ -86,12 +143,12 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
             <Header />
             <Flex
                 flexDir={isMobile ? "column" : "row"}
-                justifyContent="center"
+                justifyContent={{ base: "center", md: "space-around" }}
                 width="100%"
                 alignItems="center"
             >
                 <VStack
-                    width={{ base: "100%", sm: "75%" }}
+                    width={{ base: "100%", sm: "75%", md: "45%" }}
                     alignItems="center"
                     padding={{ base: 3 }}
                     spacing={{ base: 2 }}
@@ -111,9 +168,12 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                                         </Flex>
                                     </AccordionButton>
                                     <AccordionPanel>
-                                        <Notes
+                                        <NoteTitles
                                             notes={notes[c.key] || []}
-                                            updateSelectedNote={console.debug}
+                                            updateSelectedNote={(note) => {
+                                                updateActiveNote(note);
+                                                isMobile && onOpen();
+                                            }}
                                             categoryID={c.key}
                                         />
                                     </AccordionPanel>
@@ -145,6 +205,37 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                         </InputRightElement>
                     </InputGroup>
                 </VStack>
+                {isMobile ? (
+                    <Modal
+                        isOpen={isOpen}
+                        onClose={() => {
+                            updateActiveNote(undefined);
+                            onClose();
+                        }}
+                    >
+                        <ModalOverlay />
+                        <ModalContent>
+                            <ModalCloseButton />
+                            <ModalBody paddingY="8" paddingX="6">
+                                <PreviewNote
+                                    note={activeNote}
+                                    updateNote={updateActiveNote}
+                                    width="90%"
+                                    onDelete={handleDeleteNote}
+                                    isLoading={previewLoading}
+                                />
+                            </ModalBody>
+                        </ModalContent>
+                    </Modal>
+                ) : (
+                    <PreviewNote
+                        note={activeNote}
+                        updateNote={updateActiveNote}
+                        width="45%"
+                        onDelete={handleDeleteNote}
+                        isLoading={previewLoading}
+                    />
+                )}
             </Flex>
         </>
     );
