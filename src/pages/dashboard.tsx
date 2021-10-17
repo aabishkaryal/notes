@@ -92,7 +92,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
     const handleDeleteNote = async (note: Note) => {
         updatePreviewLoading.on();
         const res = await fetch("/api/note/delete", {
-            method: "POST",
+            method: "DELETE",
             body: JSON.stringify({ note }),
         });
         try {
