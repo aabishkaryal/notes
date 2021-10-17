@@ -19,7 +19,11 @@ type Props = {
     categoryID: string;
 };
 
-export function Notes({ notes: n, updateSelectedNote, categoryID }: Props) {
+export function NoteTitles({
+    notes: n,
+    updateSelectedNote,
+    categoryID,
+}: Props) {
     const [notes, updateNotes] = useState(n);
     const [newNoteTopic, updateNewNoteTopic] = useState("");
     const [loading, updateLoading] = useState(false);
@@ -62,6 +66,7 @@ export function Notes({ notes: n, updateSelectedNote, categoryID }: Props) {
                     variant="link"
                     onClick={() => updateSelectedNote(note)}
                     key={note.key}
+                    textTransform="capitalize"
                 >
                     {note.topic}
                 </Button>
