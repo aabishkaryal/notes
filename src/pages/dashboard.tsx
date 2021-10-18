@@ -54,6 +54,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
 
     const [loading, updateLoading] = useBoolean(false);
     const [previewLoading, updatePreviewLoading] = useBoolean(false);
+    const [noteTitlesLoading, updateNoteTitlesLoading] = useBoolean(false);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const toast = useToast();
@@ -89,7 +90,51 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
         updateLoading.off();
     };
 
-    const handleDeleteNote = async (note: Note) => {
+    const addNote = async (topic: string, categoryID: string) => {
+        updateNoteTitlesLoading.on();
+        const res = await fetch("/api/note/add", {
+            method: "POST",
+            body: JSON.stringify({ topic, categoryID }),
+        });
+        try {
+            const json = await res.json();
+            if (res.status == 200) {
+                updateNotes({
+                    ...notes,
+                    [categoryID]: [...notes[categoryID], json.note],
+                });
+                toast({
+                    title: json.message,
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                    position: "top-right",
+                });
+            } else {
+                toast({
+                    title: json.error,
+                    status: "error",
+                    duration: 3000,
+                    isClosable: true,
+                    position: "top-right",
+                });
+            }
+        } catch (error) {
+            console.debug({ error });
+            toast({
+                title: "Check your internet connection and try again.",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+                position: "top-right",
+            });
+        } finally {
+            updateNoteTitlesLoading.off();
+        }
+        return false;
+    };
+
+    const deleteNote = async (note: Note) => {
         updatePreviewLoading.on();
         const res = await fetch("/api/note/delete", {
             method: "DELETE",
@@ -112,6 +157,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                     ),
                 });
                 updateActiveNote(undefined);
+                onClose();
             } else {
                 toast({
                     title: json.error,
@@ -145,7 +191,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                 flexDir={isMobile ? "column" : "row"}
                 justifyContent={{ base: "center", md: "space-around" }}
                 width="100%"
-                alignItems="center"
+                alignItems="stretch"
             >
                 <VStack
                     width={{ base: "100%", sm: "75%", md: "45%" }}
@@ -175,6 +221,8 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                                                 isMobile && onOpen();
                                             }}
                                             categoryID={c.key}
+                                            addNote={addNote}
+                                            isLoading={noteTitlesLoading}
                                         />
                                     </AccordionPanel>
                                 </AccordionItem>
@@ -197,10 +245,10 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                                 onClick={addCategory}
                                 aria-label="Add new category of notes"
                                 variant="ghost"
-                                isRound
                                 size="sm"
                                 color="gray.500"
                                 isLoading={loading}
+                                isRound
                             />
                         </InputRightElement>
                     </InputGroup>
@@ -221,7 +269,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                                     note={activeNote}
                                     updateNote={updateActiveNote}
                                     width="90%"
-                                    onDelete={handleDeleteNote}
+                                    onDelete={deleteNote}
                                     isLoading={previewLoading}
                                 />
                             </ModalBody>
@@ -232,7 +280,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                         note={activeNote}
                         updateNote={updateActiveNote}
                         width="45%"
-                        onDelete={handleDeleteNote}
+                        onDelete={deleteNote}
                         isLoading={previewLoading}
                     />
                 )}
