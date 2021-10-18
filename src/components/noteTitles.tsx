@@ -6,7 +6,6 @@ import {
     Input,
     InputGroup,
     InputRightElement,
-    useToast,
     VStack,
 } from "@chakra-ui/react";
 
@@ -16,48 +15,19 @@ import { AddIcon } from "@chakra-ui/icons";
 type Props = {
     notes: Note[];
     updateSelectedNote: (note?: Note) => void;
+    addNote: (noteName: string, categoryID: string) => Promise<boolean>;
     categoryID: string;
+    isLoading: boolean;
 };
 
 export function NoteTitles({
-    notes: n,
+    notes,
     updateSelectedNote,
+    addNote,
     categoryID,
+    isLoading,
 }: Props) {
-    const [notes, updateNotes] = useState(n);
     const [newNoteTopic, updateNewNoteTopic] = useState("");
-    const [loading, updateLoading] = useState(false);
-
-    const toast = useToast();
-
-    const addNote = async () => {
-        updateLoading(true);
-        const res = await fetch("/api/note/add", {
-            method: "POST",
-            body: JSON.stringify({ topic: newNoteTopic, categoryID }),
-        });
-        const json = await res.json();
-        if (res.status == 200) {
-            updateNotes([...notes, json.note]);
-            updateNewNoteTopic("");
-            toast({
-                title: json.message,
-                status: "success",
-                duration: 3000,
-                isClosable: true,
-                position: "top-right",
-            });
-        } else {
-            toast({
-                title: json.error,
-                status: "error",
-                duration: 3000,
-                isClosable: true,
-                position: "top-right",
-            });
-        }
-        updateLoading(false);
-    };
 
     return (
         <VStack spacing={{ base: 2 }}>
@@ -82,12 +52,18 @@ export function NoteTitles({
                 <InputRightElement>
                     <IconButton
                         icon={<AddIcon />}
-                        onClick={addNote}
+                        onClick={async () => {
+                            const success = await addNote(
+                                newNoteTopic,
+                                categoryID
+                            );
+                            if (success) updateNewNoteTopic("");
+                        }}
                         aria-label="Add new note"
                         variant="ghost"
                         size="sm"
                         color="gray.500"
-                        isLoading={loading}
+                        isDisabled={isLoading}
                         isRound
                     />
                 </InputRightElement>
