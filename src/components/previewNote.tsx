@@ -10,6 +10,7 @@ import {
     ButtonGroup,
     Spinner,
     Text,
+    Textarea,
 } from "@chakra-ui/react";
 
 import { Note } from "@app/types";
@@ -18,6 +19,7 @@ type Props = {
     note?: Note;
     updateNote: (note: Note) => void;
     onDelete: (note: Note) => void;
+    onSave: (note: Note) => void;
     width: string;
     isLoading: boolean;
 };
@@ -27,6 +29,7 @@ export function PreviewNote({
     updateNote,
     width,
     onDelete,
+    onSave,
     isLoading,
 }: Props) {
     const [previewMode, updatePreviewMode] = useBoolean(true);
@@ -60,14 +63,31 @@ export function PreviewNote({
                     >
                         Delete
                     </Button>
+                    {!previewMode && (
+                        <Button
+                            colorScheme="purple"
+                            onClick={() => onSave(note)}
+                            isDisabled={isLoading}
+                        >
+                            Save
+                        </Button>
+                    )}
                 </ButtonGroup>
             </HStack>
             {isLoading ? (
                 <Spinner size="lg" />
-            ) : (
+            ) : previewMode ? (
                 <Text fontSize="lg" textAlign="left" width="100%">
                     {note.content}
                 </Text>
+            ) : (
+                <Textarea
+                    value={note.content}
+                    onChange={(e) => {
+                        updateNote({ ...note, content: e.target.value });
+                    }}
+                    resize="vertical"
+                />
             )}
         </VStack>
     );
