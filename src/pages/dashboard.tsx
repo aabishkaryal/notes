@@ -96,6 +96,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
             method: "POST",
             body: JSON.stringify({ topic, categoryID }),
         });
+        let success = false;
         try {
             const json = await res.json();
             if (res.status == 200) {
@@ -110,6 +111,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                     isClosable: true,
                     position: "top-right",
                 });
+                success = true;
             } else {
                 toast({
                     title: json.error,
@@ -131,7 +133,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
         } finally {
             updateNoteTitlesLoading.off();
         }
-        return false;
+        return success;
     };
 
     const deleteNote = async (note: Note) => {
