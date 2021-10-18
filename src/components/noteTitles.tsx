@@ -7,6 +7,7 @@ import {
     InputGroup,
     InputRightElement,
     VStack,
+    Text,
 } from "@chakra-ui/react";
 
 import { Note } from "@app/types";
@@ -38,7 +39,7 @@ export function NoteTitles({
                     key={note.key}
                     textTransform="capitalize"
                 >
-                    {note.topic}
+                    <Text isTruncated>{note.topic}</Text>
                 </Button>
             ))}
             <InputGroup>
