@@ -45,7 +45,11 @@ export function PreviewNote({
     return (
         <VStack width={width} spacing={{ base: 6 }} padding="4">
             <HStack justifyContent="space-between" width="100%">
-                <Heading textAlign="center" textTransform="capitalize">
+                <Heading
+                    textAlign="center"
+                    textTransform="capitalize"
+                    isTruncated
+                >
                     {note.topic}
                 </Heading>
                 <ButtonGroup isAttached>
