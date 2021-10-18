@@ -15,6 +15,7 @@
         "@emotion/styled": "^11",
         "bcrypt": "^5.0.1",
         "deta": "^1.0.1",
+        "dompurify": "^2.3.3",
         "focus-visible": "^5.2.0",
         "framer-motion": "^4",
         "marked": "^3.0.7",
