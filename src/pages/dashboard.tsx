@@ -53,7 +53,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
     const [categories, updateCategories] = useState(c);
     const [newCategoryName, updateNewCategoryName] = useState("");
 
-    const [loading, updateLoading] = useBoolean(false);
+    const [categoryLoading, updateCategoryLoading] = useBoolean(false);
     const [previewLoading, updatePreviewLoading] = useBoolean(false);
     const [noteTitlesLoading, updateNoteTitlesLoading] = useBoolean(false);
 
@@ -72,7 +72,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
     };
 
     const addCategory = async (e: React.FormEvent) => {
-        updateLoading.on();
+        updateCategoryLoading.on();
         e.preventDefault();
         const res = await fetch("/api/category/add", {
             method: "POST",
@@ -103,11 +103,50 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
         } catch (error) {
             handleError(error);
         } finally {
-            updateLoading.off();
+            updateCategoryLoading.off();
         }
     };
 
-    const deleteCategory = async (category: Category) => {};
+    const deleteCategory = async (category: Category) => {
+        updateCategoryLoading.on();
+        const res = await fetch("/api/category/delete", {
+            method: "POST",
+            body: JSON.stringify({ category }),
+        });
+        try {
+            const json = await res.json();
+            if (res.status == 200) {
+                updateCategories(
+                    categories.filter((c) => c.key != category.key)
+                );
+                const newNotes = Object.assign({}, notes);
+                delete newNotes[category.key];
+                updateNotes(newNotes);
+                if (activeNote && activeNote.categoryID == category.key)
+                    updateActiveNote(undefined);
+
+                toast({
+                    title: json.message,
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                    position: "top-right",
+                });
+            } else {
+                toast({
+                    title: json.error,
+                    status: "error",
+                    duration: 3000,
+                    isClosable: true,
+                    position: "top-right",
+                });
+            }
+        } catch (error) {
+            handleError(error);
+        } finally {
+            updateCategoryLoading.off();
+        }
+    };
 
     const addNote = async (topic: string, categoryID: string) => {
         updateNoteTitlesLoading.on();
@@ -281,6 +320,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                                                 onClick={() =>
                                                     deleteCategory(c)
                                                 }
+                                                isDisabled={categoryLoading}
                                             >
                                                 Delete
                                             </Button>
@@ -318,7 +358,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                                 variant="ghost"
                                 size="sm"
                                 color="gray.500"
-                                isLoading={loading}
+                                isLoading={categoryLoading}
                                 isRound
                             />
                         </InputRightElement>
