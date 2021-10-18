@@ -74,7 +74,7 @@ export function PreviewNote({
                     )}
                 </ButtonGroup>
             </HStack>
-            {isLoading ? (
+            {previewMode && isLoading ? (
                 <Spinner size="lg" />
             ) : previewMode ? (
                 <Text fontSize="lg" textAlign="left" width="100%">
@@ -87,6 +87,7 @@ export function PreviewNote({
                         updateNote({ ...note, content: e.target.value });
                     }}
                     resize="vertical"
+                    isDisabled={isLoading}
                 />
             )}
         </VStack>
