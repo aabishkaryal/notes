@@ -29,8 +29,9 @@ import {
     ModalCloseButton,
     ModalBody,
     useBoolean,
+    Button,
 } from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 
 import { fetchAll, fetchCategories, fetchNotes } from "@app/db";
 import { Category, Note, User } from "@app/types";
@@ -251,26 +252,39 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                         {categories.map((c) => {
                             return (
                                 <AccordionItem key={c.key} margin={{ base: 1 }}>
-                                    <AccordionButton>
-                                        <Flex
-                                            width="100%"
-                                            justifyContent="space-between"
-                                        >
-                                            <Text isTruncated>{c.name}</Text>
-                                            <AccordionIcon />
-                                        </Flex>
-                                    </AccordionButton>
+                                    <Heading>
+                                        <AccordionButton>
+                                            <Flex
+                                                width="100%"
+                                                justifyContent="space-between"
+                                            >
+                                                <Text isTruncated>
+                                                    {c.name}
+                                                </Text>
+                                                <AccordionIcon />
+                                            </Flex>
+                                        </AccordionButton>
+                                    </Heading>
                                     <AccordionPanel>
-                                        <NoteTitles
-                                            notes={notes[c.key] || []}
-                                            updateSelectedNote={(note) => {
-                                                updateActiveNote(note);
-                                                isMobile && onOpen();
-                                            }}
-                                            categoryID={c.key}
-                                            addNote={addNote}
-                                            isLoading={noteTitlesLoading}
-                                        />
+                                        <VStack alignItems="stretch">
+                                            <Button
+                                                colorScheme="red"
+                                                rightIcon={<DeleteIcon />}
+                                                alignSelf="flex-end"
+                                            >
+                                                Delete
+                                            </Button>
+                                            <NoteTitles
+                                                notes={notes[c.key] || []}
+                                                updateSelectedNote={(note) => {
+                                                    updateActiveNote(note);
+                                                    isMobile && onOpen();
+                                                }}
+                                                categoryID={c.key}
+                                                addNote={addNote}
+                                                isLoading={noteTitlesLoading}
+                                            />
+                                        </VStack>
                                     </AccordionPanel>
                                 </AccordionItem>
                             );
