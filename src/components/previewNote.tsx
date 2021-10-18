@@ -44,40 +44,34 @@ export function PreviewNote({
 
     return (
         <VStack width={width} spacing={{ base: 6 }} padding="4">
-            <HStack justifyContent="space-between" width="100%">
-                <Heading
-                    textAlign="center"
-                    textTransform="capitalize"
-                    isTruncated
+            <Heading textAlign="center" textTransform="capitalize" isTruncated>
+                {note.topic}
+            </Heading>
+            <ButtonGroup isAttached>
+                <Button
+                    colorScheme="purple"
+                    onClick={updatePreviewMode.toggle}
+                    isDisabled={isLoading}
                 >
-                    {note.topic}
-                </Heading>
-                <ButtonGroup isAttached>
+                    {previewMode ? "Edit" : "Preview"}
+                </Button>
+                <Button
+                    colorScheme="red"
+                    onClick={() => onDelete(note)}
+                    isDisabled={isLoading}
+                >
+                    Delete
+                </Button>
+                {!previewMode && (
                     <Button
                         colorScheme="purple"
-                        onClick={updatePreviewMode.toggle}
+                        onClick={() => onSave(note)}
                         isDisabled={isLoading}
                     >
-                        {previewMode ? "Edit" : "Preview"}
+                        Save
                     </Button>
-                    <Button
-                        colorScheme="red"
-                        onClick={() => onDelete(note)}
-                        isDisabled={isLoading}
-                    >
-                        Delete
-                    </Button>
-                    {!previewMode && (
-                        <Button
-                            colorScheme="purple"
-                            onClick={() => onSave(note)}
-                            isDisabled={isLoading}
-                        >
-                            Save
-                        </Button>
-                    )}
-                </ButtonGroup>
-            </HStack>
+                )}
+            </ButtonGroup>
             {previewMode && isLoading ? (
                 <Spinner size="lg" />
             ) : previewMode ? (

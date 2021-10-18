@@ -107,6 +107,8 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
         }
     };
 
+    const deleteCategory = async (category: Category) => {};
+
     const addNote = async (topic: string, categoryID: string) => {
         updateNoteTitlesLoading.on();
         const res = await fetch("/api/note/add", {
@@ -258,7 +260,12 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                                                 width="100%"
                                                 justifyContent="space-between"
                                             >
-                                                <Text isTruncated>
+                                                <Text
+                                                    isTruncated
+                                                    textTransform="capitalize"
+                                                    fontSize="xl"
+                                                    fontWeight="bold"
+                                                >
                                                     {c.name}
                                                 </Text>
                                                 <AccordionIcon />
@@ -271,6 +278,9 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                                                 colorScheme="red"
                                                 rightIcon={<DeleteIcon />}
                                                 alignSelf="flex-end"
+                                                onClick={() =>
+                                                    deleteCategory(c)
+                                                }
                                             >
                                                 Delete
                                             </Button>
@@ -321,6 +331,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                             updateActiveNote(undefined);
                             onClose();
                         }}
+                        size="lg"
                     >
                         <ModalOverlay />
                         <ModalContent>
