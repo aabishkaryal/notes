@@ -59,6 +59,17 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const toast = useToast();
 
+    const handleError = (error: unknown) => {
+        console.debug({ error });
+        toast({
+            title: "Check your internet connection and try again.",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position: "top-right",
+        });
+    };
+
     const addCategory = async (e: React.FormEvent) => {
         updateLoading.on();
         e.preventDefault();
@@ -66,28 +77,33 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
             method: "POST",
             body: JSON.stringify({ name: newCategoryName }),
         });
-        const json = await res.json();
-        if (res.status == 200) {
-            updateCategories([...categories, json.category]);
-            updateNotes({ ...notes, [json.category.key]: [] });
-            updateNewCategoryName("");
-            toast({
-                title: json.message,
-                status: "success",
-                duration: 3000,
-                isClosable: true,
-                position: "top-right",
-            });
-        } else {
-            toast({
-                title: json.error,
-                status: "error",
-                duration: 3000,
-                isClosable: true,
-                position: "top-right",
-            });
+        try {
+            const json = await res.json();
+            if (res.status == 200) {
+                updateCategories([...categories, json.category]);
+                updateNotes({ ...notes, [json.category.key]: [] });
+                updateNewCategoryName("");
+                toast({
+                    title: json.message,
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                    position: "top-right",
+                });
+            } else {
+                toast({
+                    title: json.error,
+                    status: "error",
+                    duration: 3000,
+                    isClosable: true,
+                    position: "top-right",
+                });
+            }
+        } catch (error) {
+            handleError(error);
+        } finally {
+            updateLoading.off();
         }
-        updateLoading.off();
     };
 
     const addNote = async (topic: string, categoryID: string) => {
@@ -122,14 +138,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                 });
             }
         } catch (error) {
-            console.debug({ error });
-            toast({
-                title: "Check your internet connection and try again.",
-                status: "error",
-                duration: 3000,
-                isClosable: true,
-                position: "top-right",
-            });
+            handleError(error);
         } finally {
             updateNoteTitlesLoading.off();
         }
@@ -170,14 +179,50 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                 });
             }
         } catch (error) {
-            console.debug({ error });
-            toast({
-                title: "Check your internet connection and try again.",
-                status: "error",
-                duration: 3000,
-                isClosable: true,
-                position: "top-right",
-            });
+            handleError(error);
+        } finally {
+            updatePreviewLoading.off();
+        }
+    };
+
+    const locallyUpdateNote = async (note: Note) => {
+        updateActiveNote(note);
+        updateNotes({
+            ...notes,
+            [note.categoryID]: [
+                ...notes.categoryID.filter((n) => n.key != note.key),
+                note,
+            ],
+        });
+    };
+
+    const saveNote = async (note: Note) => {
+        updatePreviewLoading.on();
+        const res = await fetch("/api/note/save", {
+            method: "PUT",
+            body: JSON.stringify({ note }),
+        });
+        try {
+            const json = await res.json();
+            if (res.status == 200) {
+                toast({
+                    title: json.message,
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                    position: "top-right",
+                });
+            } else {
+                toast({
+                    title: json.error,
+                    status: "error",
+                    duration: 3000,
+                    isClosable: true,
+                    position: "top-right",
+                });
+            }
+        } catch (error) {
+            handleError(error);
         } finally {
             updatePreviewLoading.off();
         }
@@ -269,7 +314,8 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                             <ModalBody paddingY="8" paddingX="6">
                                 <PreviewNote
                                     note={activeNote}
-                                    updateNote={updateActiveNote}
+                                    updateNote={locallyUpdateNote}
+                                    onSave={saveNote}
                                     width="90%"
                                     onDelete={deleteNote}
                                     isLoading={previewLoading}
@@ -283,6 +329,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                         updateNote={updateActiveNote}
                         width="45%"
                         onDelete={deleteNote}
+                        onSave={console.debug}
                         isLoading={previewLoading}
                     />
                 )}
