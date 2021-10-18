@@ -8,11 +8,16 @@ import {
     Button,
     ButtonGroup,
     Spinner,
-    Text,
     Textarea,
+    Box,
 } from "@chakra-ui/react";
 
+import ReactMarkdown from "react-markdown";
+import { sanitize } from "dompurify";
+
 import { Note } from "@app/types";
+
+import { componentMap } from "@app/componentMap";
 
 type Props = {
     note?: Note;
@@ -32,7 +37,6 @@ export function PreviewNote({
     isLoading,
 }: Props) {
     const [previewMode, updatePreviewMode] = useBoolean(true);
-
     // No note selected.
     if (!note)
         return (
@@ -74,17 +78,26 @@ export function PreviewNote({
             {previewMode && isLoading ? (
                 <Spinner size="lg" />
             ) : previewMode ? (
-                <Text fontSize="lg" textAlign="left" width="100%">
+                <Box
+                    textAlign="left"
+                    width="100%"
+                    as={ReactMarkdown}
+                    components={componentMap}
+                >
                     {note.content}
-                </Text>
+                </Box>
             ) : (
                 <Textarea
                     value={note.content}
                     onChange={(e) => {
-                        updateNote({ ...note, content: e.target.value });
+                        updateNote({
+                            ...note,
+                            content: sanitize(e.target.value),
+                        });
                     }}
                     resize="vertical"
                     isDisabled={isLoading}
+                    height="60vh"
                 />
             )}
         </VStack>
