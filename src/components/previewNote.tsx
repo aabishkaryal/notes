@@ -31,7 +31,7 @@ export function PreviewNote({
 }: Props) {
     const [previewMode, updatePreviewMode] = useBoolean(true);
 
-    // No note selected. (For desktop version, screen size md or larger)
+    // No note selected.
     if (!note)
         return (
             <Flex width={width} justifyContent="center" flexDir="column">
@@ -40,7 +40,7 @@ export function PreviewNote({
         );
 
     return (
-        <VStack width={width} spacing={{ base: 6 }}>
+        <VStack width={width} spacing={{ base: 6 }} padding="4">
             <HStack justifyContent="space-between" width="100%">
                 <Heading textAlign="center" textTransform="capitalize">
                     {note.topic}
@@ -65,7 +65,9 @@ export function PreviewNote({
             {isLoading ? (
                 <Spinner size="lg" />
             ) : (
-                <Text fontSize="lg">{note.content}</Text>
+                <Text fontSize="lg" textAlign="left" width="100%">
+                    {note.content}
+                </Text>
             )}
         </VStack>
     );
