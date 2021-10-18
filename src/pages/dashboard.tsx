@@ -190,7 +190,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
         updateNotes({
             ...notes,
             [note.categoryID]: [
-                ...notes.categoryID.filter((n) => n.key != note.key),
+                ...notes[note.categoryID].filter((n) => n.key != note.key),
                 note,
             ],
         });
@@ -326,10 +326,10 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                 ) : (
                     <PreviewNote
                         note={activeNote}
-                        updateNote={updateActiveNote}
+                        updateNote={locallyUpdateNote}
                         width="45%"
                         onDelete={deleteNote}
-                        onSave={console.debug}
+                        onSave={saveNote}
                         isLoading={previewLoading}
                     />
                 )}
