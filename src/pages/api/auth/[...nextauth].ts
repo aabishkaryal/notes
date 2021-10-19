@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
 
 import { compare } from "bcrypt";
+import { sanitize } from "dompurify";
 
 import { Deta } from "deta";
 import { fetchAll } from "@app/db";
@@ -20,6 +21,9 @@ export default NextAuth({
                 password: { label: "Password", type: "password" },
             },
             async authorize({ email, password }) {
+                email = sanitize(email);
+                password = sanitize(password);
+                
                 const [user, ..._] = await fetchAll<User>(db, { email });
                 if (!user) throw new Error("Invalid Credentials.");
                 const match = await compare(password, user.passwordHash);

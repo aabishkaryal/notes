@@ -1,9 +1,12 @@
-import { fetchAll } from "@app/db";
-import { Category, User } from "@app/types";
-import { Deta } from "deta";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
+
+import { Deta } from "deta";
+import { sanitize } from "dompurify";
 import { v4 as uuidv4 } from "uuid";
+
+import { fetchAll } from "@app/db";
+import { Category, User } from "@app/types";
 
 const deta = Deta(process.env.DETA_PROJECT_KEY);
 const userDB = deta.Base("User");
@@ -17,7 +20,7 @@ export default async function AddCategory(
     if (!(session && session.user))
         return res.status(401).json({ error: "Unauthorized access." });
 
-    const { name } = JSON.parse(req.body);
+    const { name } = JSON.parse(sanitize(req.body));
     if (!name) return res.status(400).json({ error: "Missing category name." });
     if (name.length > 40)
         return res.status(400).json({ error: "Category name too long." });

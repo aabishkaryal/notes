@@ -2,9 +2,11 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Deta } from "deta";
 import { v4 as uuidv4 } from "uuid";
 
+import { sanitize } from "dompurify";
+import { hash } from "bcrypt";
+
 import { validateEmail, validatePassword } from "@app/utils";
 import { User } from "@app/types";
-import { hash } from "bcrypt";
 import { fetchAll } from "@app/db";
 
 const deta = Deta(process.env.DETA_PROJECT_KEY);
@@ -19,7 +21,7 @@ export default async function SignUp(
             .status(405)
             .json({ error: "Only POST method is supported." });
 
-    const { email, password } = JSON.parse(req.body);
+    const { email, password } = JSON.parse(sanitize(req.body));
     if (!email || !password)
         return res.status(400).json({
             error: "Email and password are required",

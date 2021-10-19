@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 
 import { Deta } from "deta";
+import { sanitize } from "dompurify";
 
 import { fetchAll } from "@app/db";
 import { Category, Note, User } from "@app/types";
@@ -19,7 +20,7 @@ export default async function DeleteNote(
     if (!(session && session.user))
         return res.status(401).json({ error: "Unauthorized access." });
 
-    const { note }: { note: Note } = JSON.parse(req.body);
+    const { note }: { note: Note } = JSON.parse(sanitize(req.body));
     if (!note) return res.status(400).json({ error: "Note is required" });
 
     const [user, ..._] = await fetchAll<User>(userDB, {
