@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 
 import ReactMarkdown from "react-markdown";
+import remarkGFM from "remark-gfm";
 
 import { Note } from "@app/types";
 
@@ -82,6 +83,7 @@ export function PreviewNote({
                     width="100%"
                     as={ReactMarkdown}
                     components={componentMap}
+                    remarkPlugins={[remarkGFM]}
                 >
                     {note.content}
                 </Box>

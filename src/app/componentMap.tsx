@@ -11,6 +11,7 @@ import {
     UnorderedList,
     ChakraComponent,
     Heading,
+    Input,
 } from "@chakra-ui/react";
 
 const blockquote = chakra("blockquote", {
@@ -28,7 +29,7 @@ const blockquote = chakra("blockquote", {
     },
 });
 
-const heading =
+const H =
     (size: string): ChakraComponent<"div"> =>
     ({ children, ...props }) =>
         (
@@ -36,14 +37,16 @@ const heading =
                 {children}
             </Heading>
         );
+const Italic = chakra(Text, { baseStyle: { fontStyle: "italic" } });
+const Bold = chakra(Text, { baseStyle: { fontWeight: "bold" } });
 
 export const componentMap = {
-    h1: heading("2xl"),
-    h2: heading("xl"),
-    h3: heading("lg"),
-    h4: heading("md"),
-    h5: heading("sm"),
-    h6: heading("xs"),
+    h1: H("2xl"),
+    h2: H("xl"),
+    h3: H("lg"),
+    h4: H("md"),
+    h5: H("sm"),
+    h6: H("xs"),
     a: Link,
     img: Image,
     li: ListItem,
@@ -51,7 +54,7 @@ export const componentMap = {
     ul: UnorderedList,
     p: Text,
     code: Code,
-    em: chakra(Text, { baseStyle: { fontStyle: "italic" } }),
-    strong: chakra(Text, { baseStyle: { fontWeight: "bold" } }),
+    em: Italic,
+    strong: Bold,
     blockquote,
 };
