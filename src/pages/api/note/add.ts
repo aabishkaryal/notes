@@ -3,7 +3,6 @@ import { getSession } from "next-auth/client";
 
 import { Deta } from "deta";
 import { v4 as uuidv4 } from "uuid";
-import { sanitize } from "dompurify";
 
 import { Note, Category } from "@app/types";
 
@@ -19,7 +18,7 @@ export default async function AddCategory(
     if (!(session && session.user))
         return res.status(401).json({ error: "Unauthorized access." });
 
-    const { topic, categoryID } = JSON.parse(sanitize(req.body));
+    const { topic, categoryID } = JSON.parse(req.body);
     if (!topic)
         return res.status(400).json({ error: "Missing category name." });
     if (!categoryID)

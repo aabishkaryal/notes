@@ -15,7 +15,6 @@
         "@emotion/styled": "^11",
         "bcrypt": "^5.0.1",
         "deta": "^1.0.1",
-        "dompurify": "^2.3.3",
         "focus-visible": "^5.2.0",
         "framer-motion": "^4",
         "next": "^11.1.2",
@@ -28,7 +27,6 @@
     },
     "devDependencies": {
         "@types/bcrypt": "^5.0.0",
-        "@types/dompurify": "^2.3.1",
         "@types/react": "^17.0.5",
         "@types/uuid": "^8.3.1",
         "eslint": "7.32.0",

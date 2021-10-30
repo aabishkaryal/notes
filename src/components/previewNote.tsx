@@ -13,7 +13,6 @@ import {
 } from "@chakra-ui/react";
 
 import ReactMarkdown from "react-markdown";
-import { sanitize } from "dompurify";
 
 import { Note } from "@app/types";
 
@@ -92,7 +91,7 @@ export function PreviewNote({
                     onChange={(e) => {
                         updateNote({
                             ...note,
-                            content: sanitize(e.target.value),
+                            content: e.target.value,
                         });
                     }}
                     resize="vertical"

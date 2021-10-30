@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 
 import { Deta } from "deta";
-import { sanitize } from "dompurify";
 
 import { fetchAll } from "@app/db";
 import { Category, User } from "@app/types";
@@ -20,7 +19,7 @@ export default async function DeleteCategory(
     if (!(session && session.user))
         return res.status(401).json({ error: "Unauthorized access." });
 
-    const { category }: { category: Category } = JSON.parse(sanitize(req.body));
+    const { category }: { category: Category } = JSON.parse(req.body);
     if (!category)
         return res.status(400).json({ error: "Category is required" });
 
