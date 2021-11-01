@@ -11,7 +11,6 @@ import {
     UnorderedList,
     ChakraComponent,
     Heading,
-    Input,
 } from "@chakra-ui/react";
 
 const blockquote = chakra("blockquote", {
