@@ -280,7 +280,7 @@ export default function Dashboard({ notes: n, categories: c }: Props) {
                 flexDir={isMobile ? "column" : "row"}
                 justifyContent={{ base: "center", md: "space-around" }}
                 width="100%"
-                alignItems="stretch"
+                alignItems={{ base: "center", md: "stretch" }}
             >
                 <VStack
                     width={{ base: "100%", sm: "75%", md: "45%" }}
