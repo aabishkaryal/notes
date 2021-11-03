@@ -1,4 +1,3 @@
-import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import {
     Flex,
     IconButton,
@@ -7,8 +6,14 @@ import {
     useColorMode,
     Button,
     useBreakpointValue,
+    Icon,
+    Link,
 } from "@chakra-ui/react";
+import { MoonIcon, SunIcon } from "@chakra-ui/icons";
+
 import { BiLogOut } from "react-icons/bi";
+import { FaGithub } from "react-icons/fa";
+
 import React from "react";
 import { signOut } from "next-auth/client";
 import { useRouter } from "next/router";
@@ -52,6 +57,16 @@ export function Header({}: Props) {
                 >
                     Log Out
                 </Button>
+                <IconButton
+                    aria-label="Link to Github repository."
+                    size={useBreakpointValue({ base: "sm", md: "md" })}
+                    backgroundColor="transparent"
+                    icon={<Icon as={FaGithub} />}
+                    as={Link}
+                    href="https://github.com/aabishkaryal/notes"
+                    isRound
+                    isExternal
+                />
             </HStack>
         </Flex>
     );
