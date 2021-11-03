@@ -36,3 +36,6 @@ notes
 
 #vscode
 .vscode
+
+# nvm
+.nvmrc
